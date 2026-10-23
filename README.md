@@ -6,17 +6,23 @@ model ids, no patch editing.
 
 ## Install
 
-```
+Two bundles, in this order:
+
+```bash
+dsh plugin --profile desktop add github:Unnidentified/dsh-llm-direct
 dsh plugin --profile desktop add github:Unnidentified/dsh-merge-preset
 ```
 
-That is the whole install. The preset depends on
-[`dsh-llm-direct`](https://github.com/Unnidentified/dsh-llm-direct) for the adapter code and
-mounts it with the Merge routes already filled in.
+The first supplies the adapter code and mounts its own empty `llm-direct` row (no config, so
+it registers no providers). The second mounts the `merge-direct` row, pointing at that same
+adapter with the Merge providers already filled in.
 
-> **Do not also install `dsh-llm-direct` as a separate bundle.** This preset supplies the
-> plugin row itself. Two entries with one id make the loader reject the whole tree, and
-> *every* provider disappears from the picker — not just these.
+That is the whole install — no `cordis.patch.yml` editing. `dsh-llm-direct` is declared as a
+**peer** dependency rather than a dependency, because a git-hosted bundle cannot pull another
+git package as a subdependency (`ERR_PNPM_EXOTIC_SUBDEP`). Installing both explicitly is the
+supported path.
+
+Both use different row ids, so the loader never sees a duplicate.
 
 ## Add your API key
 

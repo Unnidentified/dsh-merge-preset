@@ -14,8 +14,14 @@
     "README.md",
     "LICENSE"
   ],
-  "dependencies": {
-    "dsh-llm-direct": "github:Unnidentified/dsh-llm-direct"
+  "peerDependencies": {
+    "dsh-llm-direct": "*"
+  },
+  "peerDependenciesMeta": {
+    "dsh-llm-direct": {
+      "optional": false,
+      "description": "Adapter code. Install as a bundle first: dsh plugin add github:Unnidentified/dsh-llm-direct"
+    }
   },
   "description": "Preconfigured Merge Gateway providers for DSH: install, drop in one API key, and the models appear in the picker.",
   "keywords": [

@@ -1,11 +1,19 @@
 # Preconfigured Merge Gateway routes for DSH.
 #
-# The row mounts `dsh-llm-direct` (the adapter code, installed as a package
-# dependency of this preset) with the Merge providers already filled in. This
-# preset supplies BOTH the id and the config, so `dsh-llm-direct` must NOT also
-# be listed as a bundle in the profile: two entries sharing one id make the
-# loader reject the whole plugin tree, which surfaces as every provider
-# disappearing from the model picker.
+# Two installs, in this order — both are plain bundles, so neither needs a patch
+# edit:
+#
+#   dsh plugin --profile desktop add github:Unnidentified/dsh-llm-direct
+#   dsh plugin --profile desktop add github:Unnidentified/dsh-merge-preset
+#
+# The first provides the adapter code and mounts its own empty `llm-direct` row,
+# which registers no providers (its apply() returns early with no config). The
+# second mounts this `merge-direct` row, which points at the same adapter module
+# with the Merge providers filled in. Distinct row ids, so the loader is happy.
+#
+# `dsh-llm-direct` is therefore declared as a peer dependency, not a dependency:
+# a git subdependency cannot be installed from a git-hosted bundle, and declaring
+# it as a peer keeps the two packages separately installable.
 #
 # Only the API key is deployment data. It is read per request through
 # `ctx.credentials.resolve(ref)` and falls back to the environment, so adding it
@@ -17,8 +25,8 @@
 #
 # or simply `export MERGE_GATEWAY_API_KEY=sk-...` before launching DSH.
 #
-# A second Merge account is preconfigured against MERGE_GATEWAY_API_KEY_2 and
-# stays out of the picker until that ref resolves.
+# `merge-direct-2` is a second account on its own ref; leave
+# MERGE_GATEWAY_API_KEY_2 unset and it is simply unusable, not broken.
 - insert:
     - id: merge-direct
       name: dsh-llm-direct
