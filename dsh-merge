@@ -9,7 +9,7 @@
 set -euo pipefail
 
 PROFILE="${1:-desktop}"
-SPEC="https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.3.2.tar.gz"
+SPEC="https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.3.3.tar.gz"
 
 find_dsh() {
   command -v dsh >/dev/null 2>&1 && { command -v dsh; return; }
