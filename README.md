@@ -7,18 +7,79 @@ YAML editing, no credential-file surgery.
 
 ## Install
 
-Two bundles, in this order:
+There are **two packages**, and both are required:
 
-```bash
-dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.1.tar.gz
-dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.2.0.tar.gz
+| Package | What it is |
+|---|---|
+| `dsh-llm-direct` | the adapter — speaks the provider HTTP API |
+| `dsh-merge-preset` | this preset — mounts the adapter and adds the Settings page |
+
+Install the adapter **first**, then the preset.
+
+### Step 0 — initialize the profile
+
+`--profile desktop` is created by the app, not the CLI. **Open DeepSeek Harness once, then
+quit it completely** (including the tray/menu-bar icon). Skip this and you get:
+
+```
+dsh: Error: Open DeepSeek Harness Desktop once to initialize its profile,
+then fully quit it before running dsh plugin --profile desktop.
 ```
 
-`dsh-llm-direct` supplies the adapter module; this preset mounts it with merge-ready rows and
-adds the Settings page. It is a **peer**, not a dependency, because a git-hosted bundle cannot
-pull another git package as a subdependency (`ERR_PNPM_EXOTIC_SUBDEP`).
+### macOS
 
-Then **quit and relaunch DSH** — plugin code loads once at startup.
+```bash
+DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
+"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.1.tar.gz
+"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.2.1.tar.gz
+```
+
+### Windows (PowerShell)
+
+```powershell
+$DSH = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
+& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.1.tar.gz
+& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.2.1.tar.gz
+```
+
+PowerShell needs `$DSH = "..."` and the call operator `&`. The macOS lines (`DSH="..."` then
+`"$DSH" ...`) are bash and fail in PowerShell with `Unexpected token 'plugin'`.
+
+### Windows (cmd.exe)
+
+```bat
+set "DSH=%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
+"%DSH%" plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.1.tar.gz
+"%DSH%" plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.2.1.tar.gz
+```
+
+### If models still do not appear
+
+Check that all three landed in the profile:
+
+- macOS: `ls ~/.dsh/profiles/desktop/node_modules | grep dsh-`
+- Windows: `dir "%USERPROFILE%\.dsh\profiles\desktop\node_modules" | findstr dsh-`
+
+You want `dsh-llm-direct`, `dsh-merge-preset`, and `@deepseek-ai\schemastery`. The last one is
+the schema library both packages import; a real DSH profile hoists it because its
+`pnpm-workspace.yaml` sets `nodeLinker: hoisted`.
+
+### Then relaunch
+
+Quit and reopen DSH. Plugin code loads once at startup, so a running app keeps the previous
+model list until it restarts.
+
+### Why tarball URLs, and not the repo link
+
+Do **not** paste the GitHub repo URL into the plugin installer. Two reasons, both verified:
+
+- **Windows has no git by default.** A repo spec makes pnpm run `git ls-remote`, which fails
+  with `'git' is not recognized as an internal or external command`.
+- **The repo installs only one package.** A repo link for this preset pulls the preset alone;
+  `dsh-llm-direct` is a peer and is *not* installed with it, so the adapter import fails and
+  **no models appear** — while the install still reports success.
+
+The `…/archive/refs/tags/<tag>.tar.gz` URL downloads over HTTPS with no git, on any platform.
 
 ## Configure it in the UI
 
