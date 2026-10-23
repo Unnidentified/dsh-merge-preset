@@ -9,9 +9,14 @@ model ids, no patch editing.
 Two bundles, in this order:
 
 ```bash
-dsh plugin --profile desktop add github:Unnidentified/dsh-llm-direct
-dsh plugin --profile desktop add github:Unnidentified/dsh-merge-preset
+dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
+dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
 ```
+
+Use the tarball URLs, not `github:` specs. A `github:` spec makes pnpm shell out to
+`git ls-remote`, and **git is not installed on a default Windows machine** — the install
+fails with `'git' is not recognized as an internal or external command`. The tarball URL is
+downloaded over HTTPS and needs no git, so it works on macOS, Linux and Windows alike.
 
 The first supplies the adapter code and mounts its own empty `llm-direct` row (no config, so
 it registers no providers). The second mounts the `merge-direct` row, pointing at that same
@@ -43,16 +48,16 @@ macOS:
 
 ```bash
 DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
-"$DSH" plugin --profile desktop add github:Unnidentified/dsh-llm-direct
-"$DSH" plugin --profile desktop add github:Unnidentified/dsh-merge-preset
+"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
+"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
 ```
 
 Windows PowerShell:
 
 ```powershell
 $DSH = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
-& $DSH plugin --profile desktop add github:Unnidentified/dsh-llm-direct
-& $DSH plugin --profile desktop add github:Unnidentified/dsh-merge-preset
+& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
+& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
 ```
 
 ### The `desktop` profile must exist first
@@ -132,6 +137,35 @@ them. Wire protocol is Anthropic Messages against
 
 `merge-direct-2` is a second account and uses its own ref. Set
 `MERGE_GATEWAY_API_KEY_2` to use it, or leave it unset and ignore that account.
+
+## One account or two
+
+The preset preconfigures **two** providers: `merge-direct` on `MERGE_GATEWAY_API_KEY` and
+`merge-direct-2` on `MERGE_GATEWAY_API_KEY_2`. If you only have one Merge key, set only that
+one ref - but the models of the *other* account still appear in the picker and fail when you
+select them.
+
+To avoid that, replace the row with a single provider. Target `merge-direct` from your
+profile's `cordis.patch.yml`:
+
+```yaml
+- id: merge-direct
+  config:
+    providers:
+      merge:
+        displayName: Merge Gateway
+        apiKeyEnv: MERGE_GATEWAY_API_KEY_2   # whichever ref holds your key
+        baseURL: https://api-gateway.merge.dev/v1/anthropic
+        endpoint: anthropic-messages
+        models:
+          - id: deepseek/deepseek-v4.1-flash-1017
+            name: DeepSeek V4.1 Flash (Merge)
+            contextWindow: 1000000
+            maxTokens: 384000
+            inputModalities: [text, image]
+```
+
+A targeting patch replaces the preset's whole `config`, leaving exactly one provider.
 
 ## Changing the models
 
