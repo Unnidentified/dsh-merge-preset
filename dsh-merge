@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# dsh-merge — short, readable wrapper around the dsh CLI.
+#
+#   ./dsh-merge            install into the desktop profile
+#   ./dsh-merge web        install into the web profile instead
+#
+# Finds the DSH launcher, installs this bundle, and prints nothing scarier
+# than a line per step.
+set -euo pipefail
+
+PROFILE="${1:-desktop}"
+SPEC="https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.3.0.tar.gz"
+
+find_dsh() {
+  command -v dsh >/dev/null 2>&1 && { command -v dsh; return; }
+  for candidate in \
+    "/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh" \
+    "$HOME/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
+  do
+    [ -x "$candidate" ] && { printf '%s\n' "$candidate"; return; }
+  done
+  return 1
+}
+
+DSH="$(find_dsh)" || {
+  echo "dsh: launcher not found. Add the CLI to PATH from DeepSeek Harness, or run with dsh on PATH." >&2
+  exit 1
+}
+
+echo "profile: $PROFILE"
+echo "source:  $SPEC"
+echo
+
+"$DSH" plugin --profile "$PROFILE" add "$SPEC"
+
+echo
+echo "Done. Quit and reopen DeepSeek Harness, then open Settings -> Merge Gateway."

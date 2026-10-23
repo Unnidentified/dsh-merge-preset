@@ -1,6 +1,6 @@
 {
   "name": "dsh-merge-preset",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -13,25 +13,19 @@
   "files": [
     "lib/index.js",
     "lib/client.js",
+    "lib/adapter.js",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "dsh-merge",
+    "dsh-merge.ps1"
   ],
   "dependencies": {
     "@deepseek-ai/schemastery": "^3.18.4"
   },
-  "peerDependencies": {
-    "dsh-llm-direct": "*"
-  },
-  "peerDependenciesMeta": {
-    "dsh-llm-direct": {
-      "optional": false,
-      "description": "Adapter code. Install as a bundle first; see README."
-    }
-  },
-  "description": "Merge Gateway models for DeepSeek Harness, configured from a Settings page instead of a YAML file.",
+  "description": "Merge Gateway models for DeepSeek Harness. One install, configure in Settings.",
   "keywords": [
     "dsh",
     "dsh-plugin",
