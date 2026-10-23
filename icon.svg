@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Two inbound routes converging into one gateway -->
+  <path d="M8 18h14l10 14" fill="none" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M8 46h14l10-14" fill="none" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+  <path d="M38 32h18" fill="none" stroke="#22d3ee" stroke-width="4" stroke-linecap="round"/>
+  <!-- Merge node -->
+  <circle cx="34" cy="32" r="7" fill="#7c3aed"/>
+  <!-- Outbound target -->
+  <circle cx="58" cy="32" r="5" fill="#22d3ee"/>
+  <!-- Key notch -->
+  <circle cx="34" cy="32" r="2.4" fill="#ede9fe"/>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Merge Gateway Preset",
+    "description": "Merge Gateway routes for DSH, preconfigured: install the preset, add your API key, and the models appear in the picker. No model ids or endpoints to type."
+  }
+}

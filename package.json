@@ -1,0 +1,40 @@
+{
+  "name": "dsh-merge-preset",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "dsh-llm-direct": "github:Unnidentified/dsh-llm-direct"
+  },
+  "description": "Preconfigured Merge Gateway providers for DSH: install, drop in one API key, and the models appear in the picker.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "merge",
+    "merge-gateway",
+    "preset",
+    "cordis"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Unnidentified/dsh-merge-preset.git"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
