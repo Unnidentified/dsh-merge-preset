@@ -7,7 +7,7 @@
 param([string]$Profile = 'desktop')
 
 $ErrorActionPreference = 'Stop'
-$Spec = 'https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.3.0.tar.gz'
+$Spec = 'https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.3.1.tar.gz'
 
 function Find-Dsh {
   $onPath = Get-Command dsh -ErrorAction SilentlyContinue
