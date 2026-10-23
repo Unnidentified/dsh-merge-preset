@@ -12,7 +12,8 @@
     "locale/*.json",
     "icon.svg",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "install.mjs"
   ],
   "peerDependencies": {
     "dsh-llm-direct": "*"
