@@ -1,116 +1,18 @@
-# Preconfigured Merge Gateway routes for DSH.
+# Mounts the Merge Gateway preset.
 #
-# Two installs, in this order — both are plain bundles, so neither needs a patch
-# edit:
+# The row carries no config on purpose: provider rows live in the Settings page
+# this bundle adds, and the Host half mounts the `dsh-llm-direct` adapter from
+# those rows. A YAML copy of the same values would give two places to edit, and
+# one of them would go stale.
 #
-#   dsh plugin --profile desktop add github:Unnidentified/dsh-llm-direct
-#   dsh plugin --profile desktop add github:Unnidentified/dsh-merge-preset
+# `dsh-llm-direct` must be installed as its own bundle — it supplies the adapter
+# module this row imports:
 #
-# The first provides the adapter code and mounts its own empty `llm-direct` row,
-# which registers no providers (its apply() returns early with no config). The
-# second mounts this `merge-direct` row, which points at the same adapter module
-# with the Merge providers filled in. Distinct row ids, so the loader is happy.
+#   dsh plugin --profile desktop add <dsh-llm-direct tarball or github spec>
+#   dsh plugin --profile desktop add <dsh-merge-preset tarball or github spec>
 #
-# `dsh-llm-direct` is therefore declared as a peer dependency, not a dependency:
-# a git subdependency cannot be installed from a git-hosted bundle, and declaring
-# it as a peer keeps the two packages separately installable.
-#
-# Only the API key is deployment data. It is read per request through
-# `ctx.credentials.resolve(ref)` and falls back to the environment, so adding it
-# takes effect on the next call — no restart:
-#
-#   ~/.dsh/.credentials.yaml
-#     refs:
-#       MERGE_GATEWAY_API_KEY: "sk-..."
-#
-# or simply `export MERGE_GATEWAY_API_KEY=sk-...` before launching DSH.
-#
-# `merge-direct-2` is a second account on its own ref; leave
-# MERGE_GATEWAY_API_KEY_2 unset and it is simply unusable, not broken.
+# Then open Settings → Merge Gateway. Add your API key there; it is written to
+# the DSH credential store and never read back into the page.
 - insert:
-    - id: merge-direct
-      name: dsh-llm-direct
-      config:
-        providers:
-          merge-direct:
-            displayName: Merge Gateway
-            apiKeyEnv: MERGE_GATEWAY_API_KEY
-            baseURL: https://api-gateway.merge.dev/v1/anthropic
-            endpoint: anthropic-messages
-            reasoning: high
-            contextWindow: 1000000
-            defaultMaxTokens: 131072
-            cacheControl: none
-            reasoningEfforts:
-              off: null
-              low: low
-              medium: medium
-              high: high
-              xhigh: xhigh
-              max: max
-            models:
-              - id: deepseek/deepseek-v4.1-flash-1017
-                name: DeepSeek V4.1 Flash 1017 (Merge)
-                contextWindow: 1000000
-                maxTokens: 384000
-                inputModalities: [text, image]
-                reasoningEfforts:
-                  off: null
-                  low: low
-                  medium: medium
-                  high: high
-                  xhigh: xhigh
-                  max: max
-              - id: zai/glm-5.3-flash[1m]
-                name: GLM-5.3 Flash (Merge)
-                contextWindow: 1000000
-                maxTokens: 131072
-                inputModalities: [text, image]
-                reasoningEfforts:
-                  off: null
-                  low: low
-                  medium: medium
-                  high: high
-                  xhigh: xhigh
-                  max: max
-          merge-direct-2:
-            displayName: Merge Gateway (Account 2)
-            apiKeyEnv: MERGE_GATEWAY_API_KEY_2
-            baseURL: https://api-gateway.merge.dev/v1/anthropic
-            endpoint: anthropic-messages
-            reasoning: high
-            contextWindow: 1000000
-            defaultMaxTokens: 131072
-            cacheControl: none
-            reasoningEfforts:
-              off: null
-              low: low
-              medium: medium
-              high: high
-              xhigh: xhigh
-              max: max
-            models:
-              - id: deepseek/deepseek-v4.1-flash-1017
-                name: DeepSeek V4.1 Flash 1017 (Merge - Account 2)
-                contextWindow: 1000000
-                maxTokens: 384000
-                inputModalities: [text, image]
-                reasoningEfforts:
-                  off: null
-                  low: low
-                  medium: medium
-                  high: high
-                  xhigh: xhigh
-                  max: max
-              - id: zai/glm-5.3-flash[1m]
-                name: GLM-5.3 Flash (Merge - Account 2)
-                contextWindow: 1000000
-                maxTokens: 131072
-                inputModalities: [text, image]
-                reasoningEfforts:
-                  off: null
-                  low: low
-                  medium: medium
-                  high: high
-                  xhigh: xhigh
-                  max: max
+    - id: merge-preset
+      name: dsh-merge-preset

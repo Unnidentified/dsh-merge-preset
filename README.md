@@ -1,78 +1,69 @@
 # dsh-merge-preset
 
-Merge Gateway models for DeepSeek Harness, **preconfigured**. Install it, add one API key,
-and DeepSeek V4.1 Flash and GLM-5.3 Flash show up in the model picker — no endpoints, no
-model ids, no patch editing.
+Merge Gateway models for DeepSeek Harness, configured from a **Settings page** — no
+YAML editing, no credential-file surgery.
+
+
 
 ## Install
 
 Two bundles, in this order:
 
 ```bash
-dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
-dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
+dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.1.tar.gz
+dsh plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.2.0.tar.gz
 ```
 
-Use the tarball URLs, not `github:` specs. A `github:` spec makes pnpm shell out to
-`git ls-remote`, and **git is not installed on a default Windows machine** — the install
-fails with `'git' is not recognized as an internal or external command`. The tarball URL is
-downloaded over HTTPS and needs no git, so it works on macOS, Linux and Windows alike.
+`dsh-llm-direct` supplies the adapter module; this preset mounts it with merge-ready rows and
+adds the Settings page. It is a **peer**, not a dependency, because a git-hosted bundle cannot
+pull another git package as a subdependency (`ERR_PNPM_EXOTIC_SUBDEP`).
 
-The first supplies the adapter code and mounts its own empty `llm-direct` row (no config, so
-it registers no providers). The second mounts the `merge-direct` row, pointing at that same
-adapter with the Merge providers already filled in.
+Then **quit and relaunch DSH** — plugin code loads once at startup.
 
-`dsh-llm-direct` is a **peer** dependency rather than a dependency: a git-hosted bundle
-cannot pull another git package as a subdependency (`ERR_PNPM_EXOTIC_SUBDEP`). Installing
-both explicitly is the supported path. They use different row ids, so the loader never sees a
-duplicate.
+## Configure it in the UI
 
-### Or run the installer
+Open **Settings → Merge Gateway**. You get:
 
-A cross-platform installer does both installs, resolves the launcher path, and can store the
-key - merging into an existing credentials file rather than replacing it:
+- A card per provider with a **display name**, **base URL**, and an enable switch.
+- An **API key field**. Paste the key and press *Save key*; it goes straight to the DSH
+  credential store. The page only ever shows *Key set* or *No key* — the value is never read
+  back into the browser.
+- **Model rows**: edit the model id and the label that appears in the picker, remove a model,
+  or add one.
+- *Save changes* persists the provider list; the adapter remounts with the new rows.
 
-```bash
-node install.mjs --key sk-your-merge-key
-```
+Turning a provider **off** removes its models from the picker entirely, so a second account
+with no key never shows models that fail on selection.
 
-On Windows, `node` ships with the DSH app, so no separate Node install is required. Pass
-`--profile web` to target a different profile.
+## Models included on first run
 
-### If `dsh` is not on your PATH
+| Provider | Model id | Context | Max out |
+|---|---|---|---|
+| `merge` | `deepseek/deepseek-v4.1-flash-1017` | 1,000,000 | 384,000 |
+| `merge` | `zai/glm-5.3-flash[1m]` | 1,000,000 | 131,072 |
 
-The launcher ships inside the app and is only linked onto `PATH` if you enable the CLI during
-setup. If `dsh` is not found, run it by full path.
+Reasoning levels `off`/`low`/`medium`/`high`/`xhigh`/`max` are mapped for both. Wire protocol
+is Anthropic Messages against `https://api-gateway.merge.dev/v1/anthropic`.
 
-macOS:
+## Adding a second account
 
-```bash
-DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
-"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
-"$DSH" plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
-```
+*Add provider* creates a new card. Give it a distinct `id`, point `apiKeyEnv` at a second
+credential ref (for example `MERGE_GATEWAY_API_KEY_2`), paste that account's key, and save.
 
-Windows PowerShell:
+## Requirements
 
-```powershell
-$DSH = "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
-& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-llm-direct/archive/refs/tags/v0.1.0.tar.gz
-& $DSH plugin --profile desktop add https://github.com/Unnidentified/dsh-merge-preset/archive/refs/tags/v0.1.0.tar.gz
-```
+- DeepSeek Harness with bundle support (`dsh plugin add`)
+- A Merge Gateway API key
+- macOS, Linux, or Windows. The adapter is platform-neutral (`fetch` + `process.env`, no
+  filesystem paths), and the Settings page is ordinary React in the host's theme tokens.
 
-### The `desktop` profile must exist first
+## Why the install is two packages
 
-`--profile desktop` is created by launching the desktop app once. On a brand-new install the
-CLI answers:
+`dsh-llm-direct` is the adapter — the code that speaks the provider HTTP APIs. This preset is
+configuration plus UI. Splitting them means the adapter can be reused for other
+Anthropic-compatible gateways without dragging a Merge-specific settings page along.
 
-```
-dsh: Error: Open DeepSeek Harness Desktop once to initialize its profile,
-then fully quit it before running dsh plugin --profile desktop.
-```
-
-So: **open the app once, quit it fully, then run the two commands.** (`--profile web`
-auto-creates itself and needs no prior launch, if you prefer that surface.)
-
+MIT licensed.
 ## Add your API key
 
 Only the key is yours to supply. Pick either route.
