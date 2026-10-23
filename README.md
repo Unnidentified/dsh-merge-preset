@@ -7,25 +7,25 @@ YAML file.
 
 Open DeepSeek Harness once, then quit it. This creates the `desktop` profile the CLI needs.
 
-Then paste the repo link into **Settings → Plugins → Add plugin**:
+Then install it, either way:
+
+**Settings → Plugins → Add plugin**, paste:
 
 ```
 https://github.com/Unnidentified/dsh-merge-preset
 ```
 
-Or use the command line, which does the same thing:
+**Or from a terminal:**
 
 ```bash
-./dsh-merge
-```
-
-On Windows:
-
-```powershell
-.\dsh-merge.ps1
+./dsh-merge          # macOS / Linux
+.\dsh-merge.ps1      # Windows PowerShell
 ```
 
 Relaunch DSH when it finishes.
+
+> On Windows, the repo link needs `git` on PATH, which a stock Windows install does not have.
+> Use the terminal wrapper there — it downloads a tarball over HTTPS and needs no git.
 
 ## Add your key
 
